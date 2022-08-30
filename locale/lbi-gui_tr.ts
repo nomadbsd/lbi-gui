@@ -108,7 +108,7 @@
         <source>This program installs Linux binaries of &lt;em&gt;Widevine&lt;/em&gt; capable browsers. They allow you to use web services like &lt;em&gt;Netflix&lt;/em&gt;, &lt;em&gt;Prime Video&lt;/em&gt;, or &lt;em&gt;Spotify&lt;/em&gt;. The installation requires approx. 1GB for the Linux environment, and approx. 100MB for the browser.
 
 </source>
-        <translation>Bu program &lt;em&gt;Widevine&lt;\'in Linux binarylerini indirir/em&gt; Kullanıcı için uygun tarayıcılardır, &lt;em&gt;Netflix&lt;/em&gt;, &lt;em&gt;Prime Video&lt;/em&gt; ve &lt;em&gt;Spotify&lt;/em&gt gibi web servislerini kullanmanızı sağlar.;. İndirme Linux ortamı için yaklaşık olarak 1GB ve her tarayıcı için yaklaşık olarak 100 MB'dır.
+        <translation>Bu program &lt;em&gt;Widevine&lt;\'in Linux binarylerini indirir/em&gt; Kullanıcı için uygun tarayıcılardır, &lt;em&gt;Netflix&lt;/em&gt;, &lt;em&gt;Prime Video&lt;/em&gt; ve &lt;em&gt;Spotify&lt;/em&gt; gibi web servislerini kullanmanızı sağlar.;. İndirme Linux ortamı için yaklaşık olarak 1GB ve her tarayıcı için yaklaşık olarak 100 MB'dır.
 
 </translation>
     </message>
