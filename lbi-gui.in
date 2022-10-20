@@ -49,6 +49,7 @@ class MainWindow(QMainWindow):
         self.chrome_rb  = QRadioButton('Google Chrome')
         self.brave_rb   = QRadioButton('Brave')
         self.vivaldi_rb = QRadioButton('Vivaldi')
+        self.opera_rb   = QRadioButton('Opera')
         self.edge_rb    = QRadioButton('Microsoft Edge')
         self.install_bt = QPushButton(install_icon, self.tr('&Install'))
         self.deinstall_bt = QPushButton(deinstall_icon, self.tr('&Deinstall'))
@@ -75,6 +76,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.chrome_rb)
         layout.addWidget(self.brave_rb)
         layout.addWidget(self.vivaldi_rb)
+        layout.addWidget(self.opera_rb)
         layout.addWidget(self.edge_rb)
         layout.addWidget(self.output)
         bbox.addWidget(self.upgrade_bt, 1, Qt.AlignLeft)
@@ -96,6 +98,7 @@ class MainWindow(QMainWindow):
         self.chrome_rb.clicked.connect(self.update_buttons)
         self.brave_rb.clicked.connect(self.update_buttons)
         self.vivaldi_rb.clicked.connect(self.update_buttons)
+        self.opera_rb.clicked.connect(self.update_buttons)
         self.edge_rb.clicked.connect(self.update_buttons)
         self.cancel_bt.clicked.connect(self.cancel_cmd)
 
@@ -149,6 +152,9 @@ class MainWindow(QMainWindow):
         elif self.vivaldi_rb.isChecked():
             self.browser = 'Vivaldi'
             args = [ 'install', 'vivaldi' ]
+        elif self.opera_rb.isChecked():
+            self.browser = 'Opera'
+            args = [ 'install', 'opera' ]
         elif self.edge_rb.isChecked():
             self.browser = 'Edge'
             args = [ 'install', 'edge' ]
@@ -172,6 +178,9 @@ class MainWindow(QMainWindow):
         elif self.vivaldi_rb.isChecked():
             self.browser = 'Vivaldi'
             args = [ 'deinstall', 'vivaldi' ]
+        elif self.opera_rb.isChecked():
+            self.browser = 'Opera'
+            args = [ 'deinstall', 'opera' ]
         elif self.edge_rb.isChecked():
             self.browser = 'Microsoft Edge'
             args = [ 'deinstall', 'edge' ]
@@ -208,6 +217,11 @@ class MainWindow(QMainWindow):
                 can_deinstall = True
             else:
                 can_install = True
+        elif self.opera_rb.isChecked():
+            if os.path.exists('/compat/ubuntu/bin/opera'):
+                can_deinstall = True
+            else:
+                can_install = True
         elif self.edge_rb.isChecked():
             if os.path.exists('/compat/ubuntu/bin/edge'):
                 can_deinstall = True
@@ -216,10 +230,11 @@ class MainWindow(QMainWindow):
         if (os.path.exists('/compat/ubuntu/bin/brave') or
            os.path.exists('/compat/ubuntu/bin/chrome') or
            os.path.exists('/compat/ubuntu/bin/vivaldi') or
-           os.path.exists('/compat/ubuntu/bin/edge')):
-               self.upgrade_bt.setEnabled(True)
+           os.path.exists('/compat/ubuntu/bin/edge') or
+           os.path.exists('/compat/ubuntu/bin/opera')):
+            self.upgrade_bt.setEnabled(True)
         else:
-               self.upgrade_bt.setEnabled(False)
+            self.upgrade_bt.setEnabled(False)
         self.install_bt.setEnabled(can_install)
         self.deinstall_bt.setEnabled(can_deinstall)
 
@@ -233,6 +248,7 @@ class MainWindow(QMainWindow):
         self.chrome_rb.setEnabled(False)
         self.brave_rb.setEnabled(False)
         self.vivaldi_rb.setEnabled(False)
+        self.opera_rb.setEnabled(False)
         self.edge_rb.setEnabled(False)
         self.upgrade_bt.setEnabled(False)
 
@@ -286,6 +302,7 @@ class MainWindow(QMainWindow):
         self.chrome_rb.setEnabled(True)
         self.brave_rb.setEnabled(True)
         self.vivaldi_rb.setEnabled(True)
+        self.opera_rb.setEnabled(True)
         self.edge_rb.setEnabled(True)
         self.quit_bt.setEnabled(True)
         self.cancel_bt.setEnabled(False)
