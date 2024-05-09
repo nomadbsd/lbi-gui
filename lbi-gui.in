@@ -23,41 +23,48 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-import os, sys
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QMessageBox, QWidget, QFormLayout, QComboBox,
+    QLabel, QLineEdit, QStyle, QPushButton, QRadioButton, QTabWidget,
+    QHBoxLayout, QPlainTextEdit, QVBoxLayout)
+from PyQt6.QtCore import (
+    Qt, QTranslator, QLocale, QRegularExpression, QCoreApplication, QProcess)
+from PyQt6.QtGui import QIcon, QRegularExpressionValidator, QTextCursor
+import os
+import sys
 
-PREFIX       = '@PREFIX@'
-PROGRAM      = '@PROGRAM@'
-REPO_URL     = '@REPO_URL@'
-LOCALE_PATH  = '@LOCALE_PATH@'
+PREFIX = '@PREFIX@'
+PROGRAM = '@PROGRAM@'
+REPO_URL = '@REPO_URL@'
+LOCALE_PATH = '@LOCALE_PATH@'
 PATH_LBI_DIR = '@PATH_LBI_DIR@'
+
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-        container       = QWidget()
-        layout          = QVBoxLayout(container)
-        bbox            = QHBoxLayout()
-        icon            = QIcon.fromTheme('web-browser')
-        quit_icon       = QIcon.fromTheme('gtk-quit')
-        cancel_icon     = QIcon.fromTheme('cancel')
-        install_icon    = QIcon.fromTheme('system-software-install')
-        deinstall_icon  = QIcon.fromTheme('edit-delete')
-        upgrade_icon    = QIcon.fromTheme('arrow-up')
-        self.chrome_rb  = QRadioButton('Google Chrome')
-        self.brave_rb   = QRadioButton('Brave')
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        bbox = QHBoxLayout()
+        icon = QIcon.fromTheme('web-browser')
+        quit_icon = QIcon.fromTheme('gtk-quit')
+        cancel_icon = QIcon.fromTheme('cancel')
+        install_icon = QIcon.fromTheme('system-software-install')
+        deinstall_icon = QIcon.fromTheme('edit-delete')
+        upgrade_icon = QIcon.fromTheme('arrow-up')
+        self.chrome_rb = QRadioButton('Google Chrome')
+        self.brave_rb = QRadioButton('Brave')
         self.vivaldi_rb = QRadioButton('Vivaldi')
-        self.opera_rb   = QRadioButton('Opera')
-        self.edge_rb    = QRadioButton('Microsoft Edge')
+        self.opera_rb = QRadioButton('Opera')
+        self.edge_rb = QRadioButton('Microsoft Edge')
         self.install_bt = QPushButton(install_icon, self.tr('&Install'))
         self.deinstall_bt = QPushButton(deinstall_icon, self.tr('&Deinstall'))
-        self.cancel_bt  = QPushButton(cancel_icon, self.tr('&Cancel'))
-        self.quit_bt    = QPushButton(quit_icon, self.tr('&Quit'))
-        self.output     = QPlainTextEdit()
-        text            = QLabel()
-        self.upgrade_bt = QPushButton(upgrade_icon, self.tr('&Upgrade browser(s)'))
+        self.cancel_bt = QPushButton(cancel_icon, self.tr('&Cancel'))
+        self.quit_bt = QPushButton(quit_icon, self.tr('&Quit'))
+        self.output = QPlainTextEdit()
+        text = QLabel()
+        self.upgrade_bt = QPushButton(
+            upgrade_icon, self.tr('&Upgrade browser(s)'))
         text.setWordWrap(True)
         text.setText(
             self.tr(
@@ -79,15 +86,16 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.opera_rb)
         layout.addWidget(self.edge_rb)
         layout.addWidget(self.output)
-        bbox.addWidget(self.upgrade_bt, 1, Qt.AlignLeft)
-        bbox.addWidget(self.install_bt, 1, Qt.AlignLeft)
-        bbox.addWidget(self.deinstall_bt, 1, Qt.AlignLeft)
-        bbox.addWidget(self.cancel_bt, 1, Qt.AlignLeft)
-        bbox.addWidget(self.quit_bt, 0, Qt.AlignRight)
+        bbox.addWidget(self.upgrade_bt, 1, Qt.AlignmentFlag.AlignLeft)
+        bbox.addWidget(self.install_bt, 1, Qt.AlignmentFlag.AlignLeft)
+        bbox.addWidget(self.deinstall_bt, 1, Qt.AlignmentFlag.AlignLeft)
+        bbox.addWidget(self.cancel_bt, 1, Qt.AlignmentFlag.AlignLeft)
+        bbox.addWidget(self.quit_bt, 0, Qt.AlignmentFlag.AlignRight)
         layout.addLayout(bbox)
         self.setCentralWidget(container)
         self.output.setTextInteractionFlags(
-            (self.output.textInteractionFlags() & ~Qt.TextEditable)
+            (self.output.textInteractionFlags() &
+             ~Qt.TextInteractionFlag.TextEditable)
         )
         self.brave_rb.setChecked(True)
         self.reset()
@@ -104,8 +112,8 @@ class MainWindow(QMainWindow):
 
     def xerrx(self, error, title, msg):
         msgbox = QMessageBox()
-        icon = msgbox.style().standardIcon(QStyle.SP_MessageBoxCritical)
-        msgbox.setIcon(QMessageBox.Critical)
+        icon = msgbox.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical)
+        msgbox.setIcon(QMessageBox.Icon.Critical)
         msgbox.setWindowIcon(icon)
         msgbox.setWindowTitle(title)
         msgbox.setContentsMargins(10, 1, 10, 1)
@@ -115,8 +123,8 @@ class MainWindow(QMainWindow):
 
     def msgwin(self, title, msg):
         msgbox = QMessageBox()
-        icon = msgbox.style().standardIcon(QStyle.SP_MessageBoxInformation)
-        msgbox.setIcon(QMessageBox.Information)
+        icon = msgbox.style().standardIcon(QStyle.StandardPixmap.SP_MessageBoxInformation)
+        msgbox.setIcon(QMessageBox.Icon.Information)
         msgbox.setWindowIcon(icon)
         msgbox.setWindowTitle(title)
         msgbox.setContentsMargins(10, 1, 10, 1)
@@ -125,14 +133,14 @@ class MainWindow(QMainWindow):
 
     def prepare_proc(self):
         self.disable_buttons()
-        self.output.moveCursor(QTextCursor.End)
+        self.output.moveCursor(QTextCursor.MoveOperation.End)
         self.output.insertPlainText('\n')
         self.proc = QProcess()
         self.proc.readyReadStandardOutput.connect(self.read_stdout)
         self.proc.readyReadStandardError.connect(self.read_stderr)
 
     def clone_repo(self):
-        args = [ 'clone', REPO_URL, PATH_LBI_DIR ]
+        args = ['clone', REPO_URL, PATH_LBI_DIR]
         self.proc.finished.connect(self.git_finished)
         self.proc.start('git', args)
         self.statusBar().showMessage(self.tr('Cloning repo ...'), -1)
@@ -145,19 +153,19 @@ class MainWindow(QMainWindow):
             return
         elif self.chrome_rb.isChecked():
             self.browser = 'Chrome'
-            args = [ 'install', 'chrome' ]
+            args = ['install', 'chrome']
         elif self.brave_rb.isChecked():
             self.browser = 'Brave'
-            args = [ 'install', 'brave' ]
+            args = ['install', 'brave']
         elif self.vivaldi_rb.isChecked():
             self.browser = 'Vivaldi'
-            args = [ 'install', 'vivaldi' ]
+            args = ['install', 'vivaldi']
         elif self.opera_rb.isChecked():
             self.browser = 'Opera'
-            args = [ 'install', 'opera' ]
+            args = ['install', 'opera']
         elif self.edge_rb.isChecked():
             self.browser = 'Edge'
-            args = [ 'install', 'edge' ]
+            args = ['install', 'edge']
         self.proc.finished.connect(self.cmd_finished)
         os.chdir(PATH_LBI_DIR)
         self.proc.start('./linux-browser-installer', args)
@@ -171,19 +179,19 @@ class MainWindow(QMainWindow):
             return
         elif self.chrome_rb.isChecked():
             self.browser = 'Google Chrome'
-            args = [ 'deinstall', 'chrome' ]
+            args = ['deinstall', 'chrome']
         elif self.brave_rb.isChecked():
             self.browser = 'Brave'
-            args = [ 'deinstall', 'brave' ]
+            args = ['deinstall', 'brave']
         elif self.vivaldi_rb.isChecked():
             self.browser = 'Vivaldi'
-            args = [ 'deinstall', 'vivaldi' ]
+            args = ['deinstall', 'vivaldi']
         elif self.opera_rb.isChecked():
             self.browser = 'Opera'
-            args = [ 'deinstall', 'opera' ]
+            args = ['deinstall', 'opera']
         elif self.edge_rb.isChecked():
             self.browser = 'Microsoft Edge'
-            args = [ 'deinstall', 'edge' ]
+            args = ['deinstall', 'edge']
         self.proc.finished.connect(self.cmd_finished)
         os.chdir(PATH_LBI_DIR)
         self.proc.start('./linux-browser-installer', args)
@@ -197,7 +205,7 @@ class MainWindow(QMainWindow):
             return
         self.proc.finished.connect(self.cmd_finished)
         os.chdir(PATH_LBI_DIR)
-        self.proc.start('./linux-browser-installer', [ 'jail', 'upgrade'])
+        self.proc.start('./linux-browser-installer', ['jail', 'upgrade'])
         self.statusBar().showMessage(self.tr('Upgrading ...'), -1)
 
     def update_buttons(self):
@@ -253,9 +261,9 @@ class MainWindow(QMainWindow):
         self.upgrade_bt.setEnabled(False)
 
     def show_output(self, data):
-        self.output.moveCursor(QTextCursor.End)
+        self.output.moveCursor(QTextCursor.MoveOperation.End)
         self.output.insertPlainText(bytes(data).decode('utf-8'))
-        self.output.moveCursor(QTextCursor.End)
+        self.output.moveCursor(QTextCursor.MoveOperation.End)
 
     def read_stdout(self):
         self.show_output(self.proc.readAllStandardOutput())
@@ -311,6 +319,7 @@ class MainWindow(QMainWindow):
     def quit(self):
         sys.exit(0)
 
+
 def main():
     app = QApplication(sys.argv)
     QCoreApplication.setApplicationName(PROGRAM)
@@ -324,7 +333,8 @@ def main():
             1, win.tr('Error'), win.tr('You must be root to run this program')
         )
     win.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
+
 
 if __name__ == '__main__':
     main()
